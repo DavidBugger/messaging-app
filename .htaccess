@@ -1,0 +1,53 @@
+#RewriteEngine On
+#RewriteCond %{REQUEST_FILENAME} !-d
+#RewriteCond %{REQUEST_FILENAME}.php -f
+#RewriteRule ^([^\.]+)$ $1.php [NC,L]
+
+#ErrorDocument 404 /404.php
+
+RewriteEngine On
+Options -Indexes
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^([^\.]+)$ $1.php [NC,L]
+
+#Content-Security-Policy - The Content-Security-Policy header is an improved version of the X-XSS-Protection header and provides an additional layer of security.
+Header always set Content-Security-Policy "default-src 'self' *; font-src  data: *;img-src * data:; script-src data: 'unsafe-inline' *; style-src * 'unsafe-inline' ;"
+
+#X-Frame-Options - The X-Frame-Options header is used to defend your website from clickjacking attack by disabling iframes on your site.
+Header set X-Frame-Options: "SAMEORIGIN"
+
+#HttpOnly and Secure flag
+Header edit Set-Cookie ^(.*)$ $1;HttpOnly;Secure;SameSite=None
+
+#Remove X-Powered-By
+Header unset X-Powered-By
+
+Header unset Server
+
+#Cache-Control Begins here
+<filesMatch ".(js|css|jpg|jpeg|png|gif|js|css|ico|swf|html)$">
+    Header set Cache-Control "max-age=31536000, public"
+    Header unset Last-Modified
+    Header unset ETag
+</filesMatch>
+
+#HTTP Strict-Transport-Security - This header instructs a user agent to only use HTTPs connections and it also declared by Strict-Transport-Security.
+Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+
+#X-XSS-Protection - X-XSS also known as Cross Site Scripting header is used to defend against Cross-Site Scripting attacks.
+Header set X-XSS-Protection "1; mode=block"
+
+#X-Content-Type-Options - The x-content-type header also called "Browser Sniffing Protection" to tell the browser to follow the MIME types indicated in the header.
+Header always set X-Content-Type-Options "nosniff"
+
+#Referrer-Policy - The Referrer-Policy is a security header field that identifies the address of the webpage that requested the current webpage.
+Header always set Referrer-Policy "strict-origin"
+
+#Permission-Policy - The Permissions-Policy is a new header that allows site to control which APIs or features can be used in the browser.
+#Header always set Permissions-Policy "geolocation=(),midi=(),sync-xhr=(),microphone=(),camera=(),magnetometer=(),gyroscope=(),fullscreen=(self),payment=()"
+
+# webfont mime types
+AddType application/vnd.ms-fontobject .eot
+AddType application/x-font-truetype .ttf
+AddType application/font-woff .woff
+AddType application/x-font-opentype .otf
